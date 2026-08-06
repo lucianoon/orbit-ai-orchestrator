@@ -1,0 +1,86 @@
+version: "3.9"
+
+services:
+  # ===== Core Infrastructure =====
+  redis:
+    image: redis:7-alpine
+    command: [ "redis-server", "--appendonly", "no" ]
+    ports: [ "6379:6379" ]
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  searxng:
+    image: searxng/searxng:latest
+    environment:
+      - BASE_URL=http://localhost:8080/
+      - SEARXNG_REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./infra/searxng/settings.yml:/etc/searxng/settings.yml:ro
+    ports: [ "8080:8080" ]
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ===== Browser Automation =====
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.48.0-focal
+    shm_size: 1g
+    command: [ "bash", "-lc", "npx playwright install-deps && tail -f /dev/null" ]
+    restart: unless-stopped
+
+  # ===== Application Services =====
+  orchestrator:
+    build: ./orchestrator
+    environment:
+      - REDIS_URL=redis://redis:6379/1
+      - EXECUTOR_QUEUE=executor-tasks
+      - PLANNER_MODEL=gpt-4.1
+      - VERIFIER_MODEL=gpt-4.1
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports: [ "8000:8000" ]
+    volumes:
+      - orchestrator-data:/app/data
+    restart: unless-stopped
+
+  executor:
+    build: ./executor
+    environment:
+      - REDIS_URL=redis://redis:6379/1
+      - EXECUTOR_QUEUE=executor-tasks
+      - SEARX_URL=http://searxng:8080
+      - PLAYWRIGHT_WS=ws://playwright:3000
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      redis:
+        condition: service_healthy
+      searxng:
+        condition: service_started
+      playwright:
+        condition: service_started
+    deploy:
+      replicas: 3
+    restart: unless-stopped
+
+  # ===== Frontend =====
+  frontend:
+    image: nginx:alpine
+    ports: [ "3000:80" ]
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - orchestrator
+    restart: unless-stopped
+
+# ===== Volumes =====
+volumes:
+  orchestrator-data:

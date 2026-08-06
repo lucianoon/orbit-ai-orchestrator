@@ -1,0 +1,8 @@
+max_tokens: 4096
+max_wall_time_seconds: 180
+max_parallel_executors: 8
+allowed_domains:
+  - wikipedia.org
+  - docs.python.org
+  - github.com
+  - arxiv.org

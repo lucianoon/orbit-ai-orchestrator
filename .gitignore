@@ -1,0 +1,21 @@
+.env
+*.db
+*.sqlite3
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+venv/
+.venv/
+dist/
+build/
+*.log
+
+# Local service overrides
+orchestrator/.env
+executor/.env
+orchestrator/data/
+executor/data/

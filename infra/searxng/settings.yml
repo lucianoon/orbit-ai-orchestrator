@@ -1,0 +1,13 @@
+use_default_settings: true
+
+server:
+  limiter: false
+  secret_key: "mysecretkey123456"
+
+search:
+  formats:
+    - html
+    - json
+
+ui:
+  static_use_hash: true

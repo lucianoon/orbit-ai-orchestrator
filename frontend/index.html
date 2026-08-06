@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbit AI Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🤖</span>
+                <span class="logo-text">OLIVER AI</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn-secondary" id="historyBtn" title="Ver histórico">
+                    <span class="btn-icon">📜</span>
+                    <span class="btn-text">Histórico</span>
+                </button>
+                <button class="theme-toggle" id="themeToggle" title="Alternar tema">
+                    <span class="icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- History Modal -->
+        <div class="modal-overlay" id="historyModal" style="display: none;">
+            <div class="modal-content glass-card">
+                <div class="modal-header">
+                    <h2><span class="icon">📜</span> Histórico de Tarefas</h2>
+                    <button class="modal-close" id="closeHistoryBtn">&times;</button>
+                </div>
+                <div class="modal-body" id="historyList">
+                    <!-- History items will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Input Section -->
+            <section class="input-section glass-card">
+                <h2 class="section-title">
+                    <span class="icon">📝</span>
+                    O que você precisa fazer?
+                </h2>
+                <div class="input-wrapper">
+                    <textarea id="goalInput" class="goal-input"
+                        placeholder="Digite seu objetivo... Ex: Pesquise sobre inteligência artificial e resuma os principais conceitos"
+                        rows="3"></textarea>
+                </div>
+                <div class="input-actions">
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="wideMode">
+                        <span class="checkmark"></span>
+                        <span class="checkbox-label">Modo amplo (mais passos paralelos)</span>
+                    </label>
+                    <button class="btn-primary" id="executeBtn">
+                        <span class="btn-icon">🚀</span>
+                        <span class="btn-text">Executar</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Steps Section -->
+            <section class="steps-section glass-card" id="stepsSection" style="display: none;">
+                <h2 class="section-title">
+                    <span class="icon">📋</span>
+                    Passos em Execução
+                    <span class="loading-spinner" id="loadingSpinner"></span>
+                </h2>
+                <div class="steps-list" id="stepsList">
+                    <!-- Steps will be dynamically inserted here -->
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section glass-card" id="resultsSection" style="display: none;">
+                <h2 class="section-title">
+                    <span class="icon">📊</span>
+                    Resultados
+                </h2>
+                <div class="results-header" id="resultsHeader">
+                    <!-- Verification status will be shown here -->
+                </div>
+                <div class="results-content" id="resultsContent">
+                    <!-- Results will be dynamically inserted here -->
+                </div>
+                <div class="results-actions">
+                    <button class="btn-secondary" id="copyResultsBtn">
+                        <span class="btn-icon">📋</span>
+                        Copiar
+                    </button>
+                    <button class="btn-secondary" id="exportMarkdownBtn">
+                        <span class="btn-icon">📄</span>
+                        Baixar Markdown
+                    </button>
+                    <button class="btn-secondary" id="exportJsonBtn">
+                        <span class="btn-icon">💾</span>
+                        Exportar JSON
+                    </button>
+                    <button class="btn-secondary" id="newTaskBtn">
+                        <span class="btn-icon">➕</span>
+                        Nova Tarefa
+                    </button>
+                </div>
+            </section>
+
+            <!-- Error Section -->
+            <section class="error-section glass-card" id="errorSection" style="display: none;">
+                <h2 class="section-title error-title">
+                    <span class="icon">⚠️</span>
+                    Erro
+                </h2>
+                <div class="error-content" id="errorContent">
+                    <!-- Error message will be shown here -->
+                </div>
+                <button class="btn-primary" id="retryBtn">
+                    <span class="btn-icon">🔄</span>
+                    Tentar Novamente
+                </button>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Powered by <strong>LangChain + GPT-4</strong> | Orbit Orchestrator v1.0</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
