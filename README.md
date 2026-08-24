@@ -2,6 +2,7 @@
 
 > Sistema de automação de tarefas complexas usando IA com arquitetura Plan-Execute-Verify
 
+[![CI](https://github.com/lucianoon/orbit-ai-orchestrator/actions/workflows/ci.yml/badge.svg)](https://github.com/lucianoon/orbit-ai-orchestrator/actions/workflows/ci.yml)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
