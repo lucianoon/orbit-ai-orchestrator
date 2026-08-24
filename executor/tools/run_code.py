@@ -6,10 +6,17 @@ def _make_runner(user_code_path: str, timeout: int, mem_mb: int, fsize_mb: int) 
     """Creates a small runner script that applies rlimits then execs the user code."""
     runner_src = f"""
 import resource, runpy, sys, signal
-resource.setrlimit(resource.RLIMIT_CPU, ({timeout},{timeout}))
-resource.setrlimit(resource.RLIMIT_AS, ({mem_mb*1024*1024},{mem_mb*1024*1024}))
-resource.setrlimit(resource.RLIMIT_FSIZE, ({fsize_mb*1024*1024},{fsize_mb*1024*1024}))
-resource.setrlimit(resource.RLIMIT_CORE, (0,0))
+
+def _set_limit(res, limit):
+    try:
+        resource.setrlimit(res, (limit, limit))
+    except (ValueError, OSError):
+        pass  # limite nao suportado nesta plataforma (ex.: RLIMIT_AS no macOS)
+
+_set_limit(resource.RLIMIT_CPU, {timeout})
+_set_limit(resource.RLIMIT_AS, {mem_mb*1024*1024})
+_set_limit(resource.RLIMIT_FSIZE, {fsize_mb*1024*1024})
+_set_limit(resource.RLIMIT_CORE, 0)
 signal.signal(signal.SIGXCPU, lambda *args: sys.exit(124))
 signal.signal(signal.SIGXFSZ, lambda *args: sys.exit(125))
 runpy.run_path("{user_code_path}", run_name="__main__")

@@ -29,3 +29,26 @@ jobs:
 
       - name: Compile Python sources
         run: python -m compileall ${{ matrix.component }}
+
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: sk-test-key-not-real
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r orchestrator/requirements.txt
+          pip install -r executor/requirements.txt
+          pip install pytest==8.3.3 pytest-asyncio==0.24.0
+
+      - name: Run unit tests
+        run: pytest -q

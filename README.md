@@ -30,6 +30,15 @@
 
 O **Orbit AI Orchestrator** é um sistema que automatiza tarefas complexas dividindo-as em passos menores, executando cada passo com ferramentas especializadas (busca web, browser, código), e verificando os resultados com IA.
 
+### Status e escopo
+
+> **Projeto em estágio inicial de desenvolvimento.** A suíte de testes cobre as
+> unidades determinísticas (autenticação, histórico, planejamento/verificação,
+> sandbox de código e roteamento de tools) com **30 testes rodando em CI**.
+> Os fluxos de integração — Redis/Celery, OpenAI, SearXNG e Chromium — exigem
+> `docker compose up` e **não possuem testes automatizados nem deploy público
+> ainda**. Avalie o projeto pelo código e pelos testes, não por demo.
+
 ### Características Principais
 
 | Feature | Descrição |
@@ -311,8 +320,8 @@ curl -X POST http://localhost:8000/task \
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/seu-usuario/oliver-orchestrator.git
-cd oliver-orchestrator
+git clone https://github.com/lucianoon/orbit-ai-orchestrator.git
+cd orbit-ai-orchestrator
 
 # 2. Crie ambiente virtual
 python -m venv venv
@@ -353,6 +362,27 @@ python -m http.server 3000
 - **UI**: http://localhost:3000
 - **API Docs**: http://localhost:8000/docs
 - **SearXNG**: http://localhost:8080
+
+---
+
+## 🧪 Testes
+
+A suíte cobre as unidades determinísticas do sistema — **30 testes, sem rede,
+sem Redis e sem chave da OpenAI** (LLM e broker são simulados nos testes de API):
+
+| Suíte | O que verifica |
+|-------|----------------|
+| `test_auth.py` | Hash PBKDF2, tokens com expiração, usuários duplicados |
+| `test_database.py` | Ciclo de vida de tasks/steps, roundtrip de evidências em JSON |
+| `test_graph.py` | Parsing de planos e do veredito OK/FALHA do verificador |
+| `test_run_code.py` | Runner com rlimits e execução real de código em subprocesso |
+| `test_worker.py` | Roteamento de passos para a tool correta |
+| `test_api.py` | `/task` ponta a ponta (200/400/502), histórico e fluxo de auth |
+
+```bash
+pip install -r requirements-dev.txt
+pytest -q
+```
 
 ---
 
