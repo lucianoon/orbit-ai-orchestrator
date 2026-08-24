@@ -32,12 +32,13 @@ O **Orbit AI Orchestrator** é um sistema que automatiza tarefas complexas divid
 
 ### Status e escopo
 
-> **Projeto em estágio inicial de desenvolvimento.** A suíte de testes cobre as
-> unidades determinísticas (autenticação, histórico, planejamento/verificação,
-> sandbox de código e roteamento de tools) com **30 testes rodando em CI**.
-> Os fluxos de integração — Redis/Celery, OpenAI, SearXNG e Chromium — exigem
-> `docker compose up` e **não possuem testes automatizados nem deploy público
-> ainda**. Avalie o projeto pelo código e pelos testes, não por demo.
+> **Projeto em estágio inicial de desenvolvimento.** A suíte cobre as unidades
+> determinísticas (autenticação, histórico, planejamento/verificação,
+> sandbox de código e roteamento de tools) com **30 testes unitários**, mais
+> **4 testes de integração** que sobem um worker Celery real contra Redis real
+> no CI — incluindo o fluxo `POST /task` ponta a ponta com sandbox executando
+> código de verdade. Os serviços externos (OpenAI, SearXNG, Chromium) seguem
+> sem deploy público; avalie o projeto pelo código e pelo pipeline de testes.
 
 ### Características Principais
 
@@ -367,8 +368,10 @@ python -m http.server 3000
 
 ## 🧪 Testes
 
-A suíte cobre as unidades determinísticas do sistema — **30 testes, sem rede,
-sem Redis e sem chave da OpenAI** (LLM e broker são simulados nos testes de API):
+Duas camadas, ambas no CI:
+
+**Unitários (30)** — sem rede, sem Redis e sem chave da OpenAI (LLM e broker são
+simulados nos testes de API):
 
 | Suíte | O que verifica |
 |-------|----------------|
@@ -379,9 +382,23 @@ sem Redis e sem chave da OpenAI** (LLM e broker são simulados nos testes de API
 | `test_worker.py` | Roteamento de passos para a tool correta |
 | `test_api.py` | `/task` ponta a ponta (200/400/502), histórico e fluxo de auth |
 
+**Integração (4)** — Redis real como service container do CI e worker Celery em
+subprocesso, exatamente como em produção (`celery -A worker worker --pool=solo`):
+
+| Teste | O que verifica |
+|-------|----------------|
+| broker roundtrip | `send_task` por nome atravessa o Redis; sandbox devolve output real |
+| degradação de busca | SearXNG fora do ar → output de erro, task não quebra |
+| consistência de config | orchestrator e executor dividem broker e fila |
+| API e2e | `POST /task` com despacho, polling e execução 100% reais |
+
 ```bash
+# Unitários (não exigem nada além do venv)
 pip install -r requirements-dev.txt
-pytest -q
+pytest -q --ignore=tests/integration
+
+# Integração (requer Redis local)
+REDIS_URL=redis://localhost:6379/15 pytest tests/integration
 ```
 
 ---
