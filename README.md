@@ -7,6 +7,21 @@
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+> **📦 Arquivado — sucedido pelo [Forgehand](https://github.com/lucianoon/forgehand).**
+>
+> Este repositório é a versão inicial da ideia: um orquestrador Plan-Execute-Verify
+> com API FastAPI, workers Celery e ferramentas de busca, browser e execução de
+> código. O que ficou pronto aqui e vale como referência são os **testes de
+> integração contra Redis e worker Celery reais no CI** — não mocks.
+>
+> A evolução completa da arquitetura — orquestração LangGraph, fan-out paralelo,
+> judge LLM com veto objetivo, gates humanos, memória persistente e execução
+> durável em PostgreSQL — está no [**Forgehand**](https://github.com/lucianoon/forgehand),
+> com [relatório de piloto](https://github.com/lucianoon/forgehand/blob/main/docs/pilot-report-2026-07-20.md)
+> e métricas medidas. O desenvolvimento ativo acontece lá.
+>
+> O código aqui continua funcional e legível, mas o roadmap abaixo não será executado.
+
 ---
 
 ## 📖 Índice
